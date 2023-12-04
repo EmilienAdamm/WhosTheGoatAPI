@@ -9,11 +9,10 @@ import (
 	"time"
 )
 
-/**
- * @name setupRouter
- * @desc Routeer initialisation and endpoints definition
- * @return http.Handler
- */
+// setupRouter
+//   - @name setupRouter
+//   - @description Set up the router and endpoints for the API
+//   - @return http.Handler
 func setupRouter() http.Handler {
 	router := mux.NewRouter()
 	// Endpoints de l'API
@@ -25,6 +24,10 @@ func setupRouter() http.Handler {
 	return router
 }
 
+// logRequest
+//   - @name logRequest
+//   - @description Log the request in the console in the format: [date] [IP] [method] path
+//   - @param request *http.Request
 func logRequest(request *http.Request) {
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
 	ip, _, _ := net.SplitHostPort(request.RemoteAddr)
@@ -32,6 +35,10 @@ func logRequest(request *http.Request) {
 	fmt.Printf("[%s] [%s] [%s] %s\n", currentTime, ip, request.Method, request.URL.Path)
 }
 
+// dealRanPlayer
+//   - @name dealRanPlayer
+//   - @description Get a random player from the database. Calls GetRanPlayer from DAO.
+//   - @param response http.ResponseWriter
 func dealRanPlayer(response http.ResponseWriter, request *http.Request) {
 	logRequest(request)
 
@@ -56,10 +63,17 @@ func dealRanPlayer(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
+// dealUpdatePlayer
+//   - @name dealUpdatePlayer
+//   - @description Update a player in the database. Only used in development.
 func dealUpdatePlayer(response http.ResponseWriter, request *http.Request) {
 
 }
 
+// dealAddScore
+//   - @name dealAddScore
+//   - @description Add a score to the database.
+//   - @param response http.ResponseWriter
 func dealAddScore(response http.ResponseWriter, request *http.Request) {
 	logRequest(request)
 
@@ -84,6 +98,10 @@ func dealAddScore(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
+// dealAddAnalytics
+//   - @name dealAddAnalytics
+//   - @description Add analytics data to the database. Stored statistics to improve the game.
+//   - @param response http.ResponseWriter
 func dealAddAnalytics(response http.ResponseWriter, request *http.Request) {
 	logRequest(request)
 

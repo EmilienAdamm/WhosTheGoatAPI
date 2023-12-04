@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"github.com/rs/cors"
 	"gopkg.in/ini.v1"
 	"log"
@@ -11,7 +12,7 @@ func main() {
 	router := setupRouter()
 
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
+		AllowedOrigins:   []string{"https://goatest.bet"},
 		AllowedMethods:   []string{"GET", "POST"},
 		AllowCredentials: true,
 	})
@@ -31,6 +32,28 @@ func startServer(router http.Handler) {
 	IP := section.Key("IP").String()
 	PORT := section.Key("PORT").String()
 	address := IP + ":" + PORT
-	print("Server started on " + address + "\n")
-	log.Fatal(http.ListenAndServe(address, router))
+
+	certFile := "/ssl/cert.pem"
+	keyFile := "/ssl/private_key.pem"
+
+	var tlsConfig = &tls.Config{}
+	tlsConfig.MinVersion = tls.VersionTLS12
+
+	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+	if err != nil {
+		log.Fatal("Erreur lors du chargement du certificat:", err)
+	}
+	tlsConfig.Certificates = []tls.Certificate{cert}
+
+	server := &http.Server{
+		Addr:      address,
+		Handler:   router,
+		TLSConfig: tlsConfig,
+	}
+
+	log.Println("Server started on " + address)
+	err = server.ListenAndServeTLS(certFile, keyFile)
+	if err != nil {
+		log.Fatal("Erreur lors du démarrage du serveur:", err)
+	}
 }

@@ -12,6 +12,10 @@ type MariaDBSingleton struct {
 
 var instance *MariaDBSingleton
 
+// GetInstance
+//   - @name GetInstance
+//   - @description Get the instance of the singleton
+//   - @return *MariaDBSingleton
 func GetInstance() *MariaDBSingleton {
 	if instance == nil {
 		instance = &MariaDBSingleton{}
@@ -20,10 +24,13 @@ func GetInstance() *MariaDBSingleton {
 	return instance
 }
 
+// initPool
+//   - @name initPool
+//   - @description Initialize the pool of connections. Called by GetInstance.
 func (m *MariaDBSingleton) initPool() {
 	iniData, err := ini.Load("config.ini")
 	if err != nil {
-		log.Fatal("Erreur lors du chargement du fichier de configuration BDD:", err)
+		log.Fatal("Error while loading config file:", err)
 	}
 	section := iniData.Section("DATABASE")
 	IP := section.Key("IP").String()
@@ -37,10 +44,17 @@ func (m *MariaDBSingleton) initPool() {
 		log.Fatal(err)
 	}
 
-	db.SetMaxOpenConns(5) // Limite de connexions
+	db.SetMaxOpenConns(5)
 	m.pool = db
 }
 
+// Query
+//   - @name Query
+//   - @description Execute a query on the database
+//   - @param query string
+//   - @param args []interface{}
+//   - @return *sql.Rows
+//   - @return error
 func (m *MariaDBSingleton) Query(query string, args ...interface{}) (*sql.Rows, error) {
 	rows, err := m.pool.Query(query, args...)
 	if err != nil {

@@ -10,10 +10,19 @@ type DAO struct {
 	db *sql.DB
 }
 
+// NewDAO
+//   - @name NewDAO
+//   - @description Create a new DAO
+//   - @param db *sql.DB
+//   - @return *DAO
 func NewDAO(db *sql.DB) *DAO {
 	return &DAO{db: db}
 }
 
+// GetRanPlayer
+//   - @name GetRanPlayer
+//   - @description Get a random player from the database
+//   - @return Player
 func (dao *DAO) GetRanPlayer() (Player, error) {
 	randomNumber := dao.getRanNum(1, 730)
 	query := "SELECT * FROM players WHERE players.ID = ?"
@@ -37,6 +46,11 @@ func (dao *DAO) GetRanPlayer() (Player, error) {
 	return player, nil
 }
 
+// UpdatePlayer
+//   - @name UpdatePlayer
+//   - @description Update a player in the database Only used in development.
+//   - @param data Player
+//   - @return error
 func (dao *DAO) UpdatePlayer(data Player) error {
 	query := `UPDATE players
                SET assists = ?
@@ -51,6 +65,11 @@ func (dao *DAO) UpdatePlayer(data Player) error {
 	return nil
 }
 
+// AddResult
+//   - @name AddResult
+//   - @description Add a result in the database
+//   - @param data ScoreData
+//   - @return error
 func (dao *DAO) AddResult(data ScoreData) error {
 	now := time.Now()
 	formattedDate := now.Format("2006-01-02 15:04:05")
@@ -64,6 +83,11 @@ func (dao *DAO) AddResult(data ScoreData) error {
 	return nil
 }
 
+// AddAnalytics
+//   - @name AddAnalytics
+//   - @description Add analytics in the database. Stored statistics to improve the game.
+//   - @param data AnalyticsData
+//   - @return error
 func (dao *DAO) AddAnalytics(data AnalyticsData) error {
 	query := `INSERT INTO analytics (questionID, rightPlayID, player1ID, player2ID, score) VALUES (?, ?, ?, ?, ?)`
 
@@ -75,6 +99,12 @@ func (dao *DAO) AddAnalytics(data AnalyticsData) error {
 	return nil
 }
 
+// getRanNum
+//   - @name getRanNum
+//   - @description Get a random number between min and max, represents a Player ID.
+//   - @param min int
+//   - @param max int
+//   - @return int
 func (dao *DAO) getRanNum(min, max int) int {
 	if min > max {
 		min, max = max, min
